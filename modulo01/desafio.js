@@ -66,7 +66,7 @@ server.post('/projects/:id/tasks', checkProjectExists,(req,res) => {
    const { id } = req.params;
    const { title } = req.body;
 
-   const project = projects.find(p => p.id == id )
+   const project = projects.find(p => p.id == id );
 
    project.tasks.push(title);
 
@@ -77,7 +77,7 @@ server.post('/projects/:id/tasks', checkProjectExists,(req,res) => {
 server.delete('/projects/:id', checkProjectExists,(req,res) => {
    const { id } = req.params;
 
-   const projectIndex = projects.findIndex(p => p.id == id)
+   const projectIndex = projects.findIndex(p => p.id == id);
 
    projects.splice(projectIndex,1);
 
