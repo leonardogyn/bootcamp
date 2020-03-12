@@ -57,7 +57,7 @@ class UserController {
     const user = await User.findByPk(req.userId);
 
     // Verificar se o email que está sendo alterado, já não existe no banco
-    if (email !== user.email) {
+    if (email !== User.email) {
       const userExists = await User.findOne({ where: { email } });
 
       if (userExists) {

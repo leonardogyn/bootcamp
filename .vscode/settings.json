@@ -1,0 +1,25 @@
+{
+    "eslint.autoFixOnSave": true,
+    "eslint.validate":[
+        {
+            "language": "javascript",
+            "autofix": true
+        },
+        {
+            "language": "javascriptreact",
+            "autofix": true
+        },
+        {
+            "language": "typescript",
+            "autofix": true
+        },
+        {
+            "language": "typescriptreact",
+            "autofix": true
+        },
+    ],
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "git.ignoreLimitWarning": true
+}
