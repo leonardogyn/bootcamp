@@ -4,4 +4,5 @@ modulo01/node_modules
 modulo02/node_modules
 bootcamp.iml
 yarn-error.log
+yarn.lock
 tmp/uploads/**
