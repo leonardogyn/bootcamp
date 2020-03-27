@@ -6,3 +6,4 @@ bootcamp.iml
 yarn-error.log
 yarn.lock
 tmp/uploads/**
+.env
