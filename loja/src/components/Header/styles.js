@@ -22,14 +22,14 @@ export const Cart = styled(Link)`
     text-align: right;
     margin-right: 10px;
 
-    strong {
+    > strong {
       display: block;
       color: #fff;
     }
 
-    span {
+    > span {
       font-size: 12px;
-      color=#999
+      color: #999;
     }
   }
 `;
