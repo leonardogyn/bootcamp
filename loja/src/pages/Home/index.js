@@ -1,7 +1,5 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { MdShoppingCart } from 'react-icons/md';
 
 import * as CartActions from '../../store/modules/cart/actions';
@@ -11,79 +9,59 @@ import api from '../../services/api';
 
 import { ProductList } from './styles';
 
-class Home extends Component {
-  constructor(props) {
-    super(props);
+export default function Home() {
+  const [products, setProducts] = useState([]);
+  const amount = useSelector((state) =>
+    state.cart.reduce((sumAmount, product) => {
+      sumAmount[product.id] = product.amount;
+      return sumAmount;
+    }, {})
+  );
 
-    this.state = {
-      products: [],
-    };
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    async function loadProducts() {
+      const response = await api.get('products');
+
+      /* Este data foi criado para diminuir o processamento da formatação do valor do produto */
+      /* Caso estivesse colocado a formatação no render, dentro da listagem, seria processado a cada produto */
+      /* Feito esse data, faço o processamento uma única vez */
+      const data = response.data.map((product) => ({
+        ...product,
+        priceFormatted: formatPrice(product.price),
+      }));
+
+      setProducts(data);
+    }
+
+    loadProducts();
+  }, []);
+
+  /* Esta função não precisa ser utilizada com o useCallback */
+  /* Pois não faz referência e nenhuma dependência no State ou propriedades  */
+  function handleAddProduct(id) {
+    dispatch(CartActions.addToCartRequest(id));
   }
 
-  async componentDidMount() {
-    const response = await api.get('products');
+  return (
+    <ProductList>
+      {products.map((product) => (
+        <li key={product.id}>
+          <img src={product.image} alt={product.title} />
 
-    /* Este data foi criado para diminuir o processamento da formatação do valor do produto */
-    /* Caso estivesse colocado a formatação no render, dentro da listagem, seria processado a cada produto */
-    /* Feito esse data, faço o processamento uma única vez */
-    const data = response.data.map((product) => ({
-      ...product,
-      priceFormatted: formatPrice(product.price),
-    }));
+          <strong>{product.title}</strong>
+          <span>{product.priceFormatted}</span>
 
-    this.setState({ products: data });
-  }
-
-  handleAddProduct = (id) => {
-    const { addToCartRequest } = this.props;
-
-    addToCartRequest(id);
-  };
-
-  render() {
-    const { products } = this.state;
-    const { amount } = this.props;
-
-    return (
-      <ProductList>
-        {products.map((product) => (
-          <li key={product.id}>
-            <img src={product.image} alt={product.title} />
-
-            <strong>{product.title}</strong>
-            <span>{product.priceFormatted}</span>
-
-            <button
-              type="button"
-              onClick={() => this.handleAddProduct(product.id)}
-            >
-              <div>
-                <MdShoppingCart size={16} color="#FFF" />{' '}
-                {amount[product.id] || 0}
-              </div>
-              <span>Adicionar no Carrinho</span>
-            </button>
-          </li>
-        ))}
-      </ProductList>
-    );
-  }
+          <button type="button" onClick={() => handleAddProduct(product.id)}>
+            <div>
+              <MdShoppingCart size={16} color="#FFF" />{' '}
+              {amount[product.id] || 0}
+            </div>
+            <span>Adicionar no Carrinho</span>
+          </button>
+        </li>
+      ))}
+    </ProductList>
+  );
 }
-
-Home.propTypes = {
-  addToCartRequest: PropTypes.func.isRequired,
-  amount: PropTypes.objectOf(PropTypes.number).isRequired,
-};
-
-const mapStateToProps = (state) => ({
-  amount: state.cart.reduce((amount, product) => {
-    amount[product.id] = product.amount;
-    return amount;
-  }, {}),
-});
-
-/* Converte Actions do Redux em propriedades do componente */
-const mapDispatchToProps = (dispatch) =>
-  bindActionCreators(CartActions, dispatch);
-
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
